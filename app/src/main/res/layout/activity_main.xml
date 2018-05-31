@@ -48,13 +48,4 @@
         tools:layout_editor_absoluteX="154dp"
         tools:layout_editor_absoluteY="351dp" />
 
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Cris esteve aqui 1.0"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:layout_editor_absoluteY="301dp" />
-
 </android.support.constraint.ConstraintLayout>
