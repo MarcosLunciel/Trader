@@ -2,4 +2,5 @@
     <string name="app_name">Trader</string>
     <string name="Aberto">Trader</string>
     <string name="Fechado">Trader</string>
+    <string name="teste_gps">longitude</string>
 </resources>
