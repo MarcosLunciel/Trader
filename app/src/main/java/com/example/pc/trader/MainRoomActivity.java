@@ -82,6 +82,9 @@ public class MainRoomActivity extends AppCompatActivity implements LocationListe
                 // Show an expanation to the user *asynchronously* -- don't block
                 // this thread waiting for the user's response! After the user
                 // sees the explanation, try again to request the permission.
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                        MY_PERMISSIONS_REQUEST_FINE_LOCATION);
 
             } else {
 
@@ -112,17 +115,7 @@ public class MainRoomActivity extends AppCompatActivity implements LocationListe
 
                     // permission was granted, yay! Do the
                     // contacts-related task you need to do.
-                    locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-                    provider = locationManager.getProvider(LocationManager.GPS_PROVIDER);
-                    Criteria criteria = new Criteria();
-                    criteria.setAccuracy(Criteria.ACCURACY_FINE);
-                    criteria.setCostAllowed(false);
-
-                    String providerName = locationManager.getBestProvider(criteria, true);
-
-                    locationManager.requestLocationUpdates(providerName,1000,0,this);
-                    Location mylocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                    text2.setText(String.valueOf(mylocation.getLongitude()));
+                    String providerName = setConfigGPS();
 
                     // If no suitable provider is found, null is returned.
                     if (providerName != null) {
@@ -134,6 +127,9 @@ public class MainRoomActivity extends AppCompatActivity implements LocationListe
 
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
+                    Intent intent = new Intent(this, LoginActivity.class);
+                    startActivity(intent);
+                    this.finish();
                 }
                 return;
             }
@@ -143,6 +139,7 @@ public class MainRoomActivity extends AppCompatActivity implements LocationListe
         }
     }
 
+    @SuppressLint("MissingPermission")
     @Override
     protected void onStart() {
         super.onStart();
@@ -159,6 +156,13 @@ public class MainRoomActivity extends AppCompatActivity implements LocationListe
             // the location services, then when the user clicks the "OK" button,
             enableLocationSettings();
         }
+        else{
+            if (ContextCompat.checkSelfPermission(this,
+                    android.Manifest.permission.ACCESS_FINE_LOCATION)
+                    == PackageManager.PERMISSION_GRANTED){
+                String providerName = setConfigGPS();
+            }
+        }
     }
 
     private void enableLocationSettings() {
@@ -166,6 +170,21 @@ public class MainRoomActivity extends AppCompatActivity implements LocationListe
         startActivity(settingsIntent);
     }
 
+    @SuppressLint("MissingPermission")
+    protected String setConfigGPS(){
+        locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        provider = locationManager.getProvider(LocationManager.GPS_PROVIDER);
+        Criteria criteria = new Criteria();
+        criteria.setAccuracy(Criteria.ACCURACY_FINE);
+        criteria.setCostAllowed(false);
+
+        String providerName = locationManager.getBestProvider(criteria, true);
+
+        locationManager.requestSingleUpdate(providerName,this,null);
+        Location mylocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        text2.setText(String.valueOf(mylocation.getLongitude()));
+        return providerName;
+    }
     @Override
     public void onLocationChanged(Location location) {
         @SuppressLint("MissingPermission") Location mylocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
@@ -192,6 +211,6 @@ public class MainRoomActivity extends AppCompatActivity implements LocationListe
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         return
-               abdt.onOptionsItemSelected(item) || super.onOptionsItemSelected(item);
+                abdt.onOptionsItemSelected(item) || super.onOptionsItemSelected(item);
     }
 }
