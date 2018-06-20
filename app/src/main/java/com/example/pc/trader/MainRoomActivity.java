@@ -2,7 +2,9 @@ package com.example.pc.trader;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Criteria;
@@ -17,12 +19,15 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.util.List;
 
 public class MainRoomActivity extends AppCompatActivity implements LocationListener {
 
@@ -33,6 +38,8 @@ public class MainRoomActivity extends AppCompatActivity implements LocationListe
     private static final int MY_PERMISSIONS_REQUEST_FINE_LOCATION = 0;
     LocationManager locationManager = null;
     LocationProvider provider = null;
+    LocationManager mLocationManager;
+    Location myLocation;
     TextView text2;
 
     @Override
@@ -127,9 +134,7 @@ public class MainRoomActivity extends AppCompatActivity implements LocationListe
 
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
-                    Intent intent = new Intent(this, LoginActivity.class);
-                    startActivity(intent);
-                    this.finish();
+                    Toast.makeText(getApplicationContext(),"Não podemos acessar a localização sem sua permissão", Toast.LENGTH_LONG).show();
                 }
                 return;
             }
@@ -137,6 +142,46 @@ public class MainRoomActivity extends AppCompatActivity implements LocationListe
             // other 'case' lines to check for other
             // permissions this app might request
         }
+    }
+
+    @SuppressLint("MissingPermission")
+    protected String setConfigGPS(){
+        locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        provider = locationManager.getProvider(LocationManager.GPS_PROVIDER);
+        Criteria criteria = new Criteria();
+        criteria.setAccuracy(Criteria.ACCURACY_FINE);
+        criteria.setCostAllowed(false);
+
+        String providerName = locationManager.getBestProvider(criteria, true);
+
+        locationManager.requestSingleUpdate(providerName,this,null);
+        myLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        if(myLocation != null) {
+            Toast.makeText(getApplicationContext(), String.valueOf(myLocation.getLongitude()), Toast.LENGTH_LONG).show();
+        }else{
+            myLocation = getLastLocation();
+            if(myLocation != null){
+                Toast.makeText(getApplicationContext(), String.valueOf(myLocation.getLongitude()), Toast.LENGTH_LONG).show();
+            }
+        }
+        return providerName;
+    }
+
+    private Location getLastLocation() {
+        mLocationManager = (LocationManager)getApplicationContext().getSystemService(LOCATION_SERVICE);
+        List<String> providers = mLocationManager.getProviders(true);
+        Location bestLocation = null;
+        for (String provider : providers) {
+            @SuppressLint("MissingPermission") Location l = mLocationManager.getLastKnownLocation(provider);
+            if (l == null) {
+                continue;
+            }
+            if (bestLocation == null || l.getAccuracy() < bestLocation.getAccuracy()) {
+                // Found best last known location: %s", l);
+                bestLocation = l;
+            }
+        }
+        return bestLocation;
     }
 
     @SuppressLint("MissingPermission")
@@ -154,7 +199,21 @@ public class MainRoomActivity extends AppCompatActivity implements LocationListe
         if (!gpsEnabled) {
             // Build an alert dialog here that requests that the user enable
             // the location services, then when the user clicks the "OK" button,
-            enableLocationSettings();
+            Dialog dialog = new AlertDialog.Builder(this)
+                    .setMessage("Precisamos que você ligue seu GPS")
+                    .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            enableLocationSettings();
+
+                        }
+                    })
+                    .setNegativeButton("Não quero", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            // User cancelled the dialog
+                        }
+                    }).create();
+
+            dialog.show();
         }
         else{
             if (ContextCompat.checkSelfPermission(this,
@@ -170,27 +229,13 @@ public class MainRoomActivity extends AppCompatActivity implements LocationListe
         startActivity(settingsIntent);
     }
 
-    @SuppressLint("MissingPermission")
-    protected String setConfigGPS(){
-        locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-        provider = locationManager.getProvider(LocationManager.GPS_PROVIDER);
-        Criteria criteria = new Criteria();
-        criteria.setAccuracy(Criteria.ACCURACY_FINE);
-        criteria.setCostAllowed(false);
 
-        String providerName = locationManager.getBestProvider(criteria, true);
-
-        locationManager.requestSingleUpdate(providerName,this,null);
-        Location mylocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        text2.setText(String.valueOf(mylocation.getLongitude()));
-        return providerName;
-    }
     @Override
     public void onLocationChanged(Location location) {
         @SuppressLint("MissingPermission") Location mylocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         Log.d("CHANGED", "LOCATION UPDATED" + String.valueOf(mylocation.getLongitude()));
-        text2.setText(String.valueOf(mylocation.getLongitude()));
-
+        text2.setText(String.valueOf(location.getLongitude()));
+        Toast.makeText(getApplicationContext(),String.valueOf(mylocation.getLongitude()), Toast.LENGTH_LONG).show();
     }
 
     @Override

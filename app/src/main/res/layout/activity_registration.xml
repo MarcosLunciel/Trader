@@ -9,21 +9,22 @@
 
     <EditText
         android:id="@+id/txtNameRegistration"
-        android:layout_width="350dp"
+        android:layout_width="273dp"
         android:layout_height="0dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="16dp"
         android:ems="10"
         android:hint="Nome"
         android:inputType="textPersonName"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.505"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageView" />
 
     <EditText
         android:id="@+id/txtEmailRegistration"
-        android:layout_width="350dp"
+        android:layout_width="271dp"
         android:layout_height="0dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
@@ -37,7 +38,7 @@
 
     <EditText
         android:id="@+id/txtPasswordRegistration"
-        android:layout_width="350dp"
+        android:layout_width="270dp"
         android:layout_height="0dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
@@ -54,12 +55,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="16dp"
         android:onClick="btnRegistrationUser_Click"
         android:text="Registration"
-        app:layout_constraintEnd_toEndOf="@+id/txtPasswordRegistration"
-        app:layout_constraintStart_toStartOf="@+id/txtPasswordRegistration"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/txtPasswordRegistration" />
 
     <ImageView

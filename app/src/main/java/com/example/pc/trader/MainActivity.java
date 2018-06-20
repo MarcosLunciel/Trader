@@ -26,10 +26,5 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void btnTeste_Click(View v){
-
-        Toast.makeText(MainActivity.this,"Deu certo!",Toast.LENGTH_SHORT).show();
-
-    }
 
 }
